@@ -53,11 +53,19 @@ def run_standard_classification():
 
     le = LabelEncoder()
     df['conditions'] = le.fit_transform(df['conditions'])
+    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+
+    for col in cond_feat_cols:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
+        )
 
     leakage = ['tempmax', 'tempmin', 'temp', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'windir_sin', 'windir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
 
     precip_cols = [c for c in df.columns if c.startswith('preciptype')]
@@ -91,8 +99,9 @@ def run_standard_classification():
     best_model = search.best_estimator_
     preds = best_model.predict(X_test)
 
-    print("✅ Best params:", search.best_params_)
+    print("Best params:", search.best_params_)
     print(f"Accuracy: {accuracy_score(y_test, preds):.4f}")
+    print(f"Weighted F1: {f1_score(y_test, preds, average='weighted'):.4f}")
     print(f"Macro F1: {f1_score(y_test, preds, average='macro'):.4f}")
 
     plt.figure(figsize=(6, 5))
@@ -100,7 +109,7 @@ def run_standard_classification():
                 xticklabels=le.classes_, yticklabels=le.classes_)
     plt.title("Confusion Matrix: Standard Class (Tuned)")
     plt.savefig("S5_Confusion_Standard_Tuned.png")
-    print("✅ Saved Confusion Matrix.")
+    print("Saved Confusion Matrix.")
 
 
 
@@ -120,10 +129,21 @@ def run_standard_regression():
         df[col] = df[col].astype(str).fillna('none')
         df[col] = LabelEncoder().fit_transform(df[col])
 
+    le = LabelEncoder()
+    df['conditions'] = le.fit_transform(df['conditions'])
+    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+
+    for col in cond_feat_cols:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
+        )
+
     leakage = ['tempmax', 'tempmin', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'conditions']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'conditions', 'windir_sin', 'windir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
 
     X_train, X_test, y_train, y_test = get_splits(df, 'temp')
@@ -153,7 +173,7 @@ def run_standard_regression():
     best_model = search.best_estimator_
     preds = best_model.predict(X_test)
 
-    print("✅ Best params:", search.best_params_)
+    print("Best params:", search.best_params_)
     print(f"MAE: {mean_absolute_error(y_test, preds):.2f}")
     print(f"R2:  {r2_score(y_test, preds):.4f}")
 
@@ -172,11 +192,19 @@ def run_pca_flow():
 
     le = LabelEncoder()
     df['conditions'] = le.fit_transform(df['conditions'])
+    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+
+    for col in cond_feat_cols:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
+        )
 
     leakage = ['tempmax', 'tempmin', 'temp', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'windir_sin', 'windir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
 
     precip_cols = [c for c in df.columns if c.startswith('preciptype')]
@@ -215,7 +243,7 @@ def run_pca_flow():
     best_pipe = search.best_estimator_
     preds = best_pipe.predict(X_test)
 
-    print("✅ Best params:", search.best_params_)
+    print("Best params:", search.best_params_)
     print(f"Macro F1: {f1_score(y_test, preds, average='macro'):.4f}")
 
     plt.figure(figsize=(6, 5))
@@ -223,7 +251,7 @@ def run_pca_flow():
                 xticklabels=le.classes_, yticklabels=le.classes_)
     plt.title("Confusion Matrix: PCA Class (Tuned)")
     plt.savefig("S5_Confusion_PCA_Tuned.png")
-    print("✅ Saved Confusion Matrix.")
+    print("Saved Confusion Matrix.")
 
 
 

@@ -34,7 +34,7 @@ def prep_common_features(df):
         df['day_of_year'] = df['datetime'].dt.dayofyear
         df = encode_cyclical(df, 'day_of_year', 365.25)
 
-    df = encode_cyclical(df, 'windir', 360.0)
+    df = encode_cyclical(df, 'winddir', 360.0)
 
     if 'conditions' in df.columns:
         df.loc[df['conditions'].str.contains('Rain', case=False, na=False), 'conditions'] = 'Rain'
@@ -50,7 +50,7 @@ def add_lags(df):
         df = df.sort_values(by='datetime').reset_index(drop=True)
 
     # STRICT LOGIC REQUESTED
-    exclude_cols = ['datetime', 'conditions', 'day_of_year_sin', 'day_of_year_cos', 'moonphase']
+    exclude_cols = ['datetime', 'day_of_year_sin', 'day_of_year_cos']
     cols_to_lag = [col for col in df.columns if col not in exclude_cols and col != 'datetime']
 
     for col in cols_to_lag:
