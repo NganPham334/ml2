@@ -4,7 +4,7 @@ import time
 import sys
 
 # --- CONFIGURATION ---
-API_KEY = "2VK8ABRWJRPB3N37EJDPQ87WU"
+API_KEY = "hehe"
 LOCATION = "Cau Giay,Hanoi,VN"
 START_DATE = "2020-01-02"
 END_DATE = "2025-06-21"
