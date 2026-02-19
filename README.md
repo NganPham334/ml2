@@ -26,9 +26,9 @@ we need both since with just cosine, its value is the same for both 0 at the end
 
 we didnt just create a Date Of Year feature as representing day of year as cosine and sine values here preserve the cyclical nature of dates and time(december 30th being very close to january 1st)
 
-also do that for windir(north is 0* and east is 90* but this doesnt really matter)
+also we keep datetime feature even though we've encoded it into date of year, it will come in handy later
 
-also we keep datetime feature since it will come in handy later down the pipeline
+also do the encoding for winddir(north is 0* and east is 90* but this doesnt really matter)
 
 consolidated:
 - Original: Rain ➔ Rain
