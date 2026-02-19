@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import classification_report, f1_score, mean_absolute_error, mean_squared_error, r2_score, \
-    confusion_matrix, accuracy_score
+    confusion_matrix, accuracy_score, root_mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
@@ -162,6 +162,7 @@ def run_standard_regression():
     preds = best_model.predict(X_test)
 
     print("Best params:", search.best_params_)
+    print(f"RMSE: {root_mean_squared_error(y_test, preds):.4f}")
     print(f"MAE: {mean_absolute_error(y_test, preds):.2f}")
     print(f"R2:  {r2_score(y_test, preds):.4f}")
 
