@@ -52,25 +52,19 @@ def run_standard_classification():
         return
 
     le = LabelEncoder()
-    df['conditions'] = le.fit_transform(df['conditions'])
-    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+    precip_cols = [c for c in df.columns if c.startswith('preciptype')]
+    for col in precip_cols:
+        df[col] = le.fit_transform(df[col])
 
-    for col in cond_feat_cols:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
-        )
+    cond_cols = [c for c in df.columns if c.startswith("conditions")]
+    for col in cond_cols:
+        df[col] = le.fit_transform(df[col])
 
     leakage = ['tempmax', 'tempmin', 'temp', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'windir_sin', 'windir_cos']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'winddir_sin', 'winddir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
-
-    precip_cols = [c for c in df.columns if c.startswith('preciptype')]
-    for col in precip_cols:
-        df[col] = LabelEncoder().fit_transform(df[col])
 
     X_train, X_test, y_train, y_test = get_splits(df, 'conditions')
 
@@ -124,26 +118,20 @@ def run_standard_regression():
         print("❌ File 'S4_lagged_regress.csv' not found. Skipping.")
         return
 
+    le = LabelEncoder()
     precip_cols = [c for c in df.columns if c.startswith('preciptype')]
     for col in precip_cols:
-        df[col] = df[col].astype(str).fillna('none')
-        df[col] = LabelEncoder().fit_transform(df[col])
+        df[col] = le.fit_transform(df[col])
 
-    le = LabelEncoder()
-    df['conditions'] = le.fit_transform(df['conditions'])
-    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+    cond_cols = [c for c in df.columns if c.startswith("conditions")]
+    for col in cond_cols:
+        df[col] = le.fit_transform(df[col])
 
-    for col in cond_feat_cols:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
-        )
 
     leakage = ['tempmax', 'tempmin', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'conditions', 'windir_sin', 'windir_cos']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'conditions', 'winddir_sin', 'winddir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
 
     X_train, X_test, y_train, y_test = get_splits(df, 'temp')
@@ -191,25 +179,19 @@ def run_pca_flow():
         return
 
     le = LabelEncoder()
-    df['conditions'] = le.fit_transform(df['conditions'])
-    cond_feat_cols = [c for c in df.columns if c.startswith("conditions_")]
+    precip_cols = [c for c in df.columns if c.startswith('preciptype')]
+    for col in precip_cols:
+        df[col] = le.fit_transform(df[col])
 
-    for col in cond_feat_cols:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .map(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
-        )
+    cond_cols = [c for c in df.columns if c.startswith("conditions")]
+    for col in cond_cols:
+        df[col] = le.fit_transform(df[col])
 
     leakage = ['tempmax', 'tempmin', 'temp', 'feelslikemax', 'feelslikemin', 'feelslike',
                'dew', 'humidity', 'precip', 'precipcover', 'preciptype', 'windgust',
                'windspeed', 'windir', 'sealevelpressure', 'cloudcover', 'visibility',
-               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'windir_sin', 'windir_cos']
+               'solarradiation', 'solarenergy', 'icon', 'stations', 'description', 'name', 'winddir_sin', 'winddir_cos']
     df = df.drop(columns=[c for c in leakage if c in df.columns], errors='ignore')
-
-    precip_cols = [c for c in df.columns if c.startswith('preciptype')]
-    for col in precip_cols:
-        df[col] = LabelEncoder().fit_transform(df[col])
 
     X_train, X_test, y_train, y_test = get_splits(df, 'conditions')
 

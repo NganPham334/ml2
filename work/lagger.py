@@ -4,7 +4,7 @@ import pandas as pd
 files_to_process = {
     "S3_engineered_class.csv": "S4_lagged_class.csv",
     "S3_engineered_regress.csv": "S4_lagged_regress.csv",
-    "S3_engineered_class_full.csv": "S4_lagged_class_full.csv" # New PCA Flow
+    "S3_engineered_class_full.csv": "S4_lagged_class_full.csv"
 }
 
 def create_dynamic_lag_features(input_file, output_file):
