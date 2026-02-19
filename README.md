@@ -58,6 +58,8 @@ Clear                      106
 Overcast                    59
 Rain                         5
 
+We dont do data normalisation as random forests are scale invariant, they break feature space down to 1D questions
+
 Now we split the pipeline into 3 flows: classification and regression non PCA, classification with PCA
 
 classification and regression non PCA:
