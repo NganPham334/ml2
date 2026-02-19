@@ -19,7 +19,7 @@ removed all features with 0 variance as per the slides(there were no such featur
 responsible python script: cleaner.py
 
 ## 3. Feature engineering
-From date and time we created 2 features day_cosine and day_sine
+From date and time we created 2 features day_cosine and day_sine;
 day_cosine: 1st day starts at 1
 day_sine: 1st day starts at 0
 we need both since with just cosine, its value is the same for both 0 at the end of spring and start of winter for example, which will be difficult for the model to differentiate
