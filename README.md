@@ -24,7 +24,7 @@ day_cosine: 1st day starts at 1
 day_sine: 1st day starts at 0
 we need both since with just cosine, its value is the same for both 0 at the end of spring and start of winter for example, which will be difficult for the model to differentiate
 
-we didnt just create a Date Of Year feature as representing day of year as cosine and sine values here preserve the cyclical nature of dates and time(december 30th being very close to january 1st)
+we didnt just create a Date Of Year feature as representing the day of the year as sine and cosine waves allows the model to understand that December 31st and January 1st are mathematically close, rather than at opposite ends of a linear scale.
 
 also we keep datetime feature even though we've encoded it into date of year, it will come in handy later
 
