@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.metrics import classification_report, f1_score, mean_absolute_error, mean_squared_error, r2_score, \
+from sklearn.metrics import classification_report, f1_score, mean_absolute_error, r2_score, \
     confusion_matrix, accuracy_score, root_mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -68,6 +68,21 @@ def run_standard_classification():
 
     X_train, X_test, y_train, y_test = get_splits(df, 'conditions')
 
+    # --- BASELINES ---
+    # Majority Class Baseline
+    majority_class = y_train.mode()[0]
+    preds_majority = np.full(shape=y_test.shape, fill_value=majority_class)
+    print("Baseline (Majority Class):")
+    print(f"  Accuracy: {accuracy_score(y_test, preds_majority):.4f}")
+    print(f"  Macro F1: {f1_score(y_test, preds_majority, average='macro'):.4f}\n")
+
+    # Last Observation Baseline (Predict t using true value of t-1)
+    preds_last_obs = np.concatenate(([y_train.iloc[-1]], y_test.iloc[:-1]))
+    print("Baseline (Last Observation):")
+    print(f"  Accuracy: {accuracy_score(y_test, preds_last_obs):.4f}")
+    print(f"  Macro F1: {f1_score(y_test, preds_last_obs, average='macro'):.4f}\n")
+
+    # --- MODELING ---
     param_dist = {
         "n_estimators": [200, 300, 500],
         "max_depth": [10, 15, 25, None],
@@ -93,15 +108,21 @@ def run_standard_classification():
     best_model = search.best_estimator_
     preds = best_model.predict(X_test)
 
-    print("Best params:", search.best_params_)
-    print(f"Accuracy: {accuracy_score(y_test, preds):.4f}")
-    print(f"Weighted F1: {f1_score(y_test, preds, average='weighted'):.4f}")
-    print(f"Macro F1: {f1_score(y_test, preds, average='macro'):.4f}")
+    print("\nBest params:", search.best_params_)
+    print(f"Model Accuracy: {accuracy_score(y_test, preds):.4f}")
+    print(f"Model Weighted F1: {f1_score(y_test, preds, average='weighted'):.4f}")
+    print(f"Model Macro F1: {f1_score(y_test, preds, average='macro'):.4f}\n")
+
+    print("Classification Report:")
+    print(classification_report(y_test, preds, target_names=[str(c) for c in le.classes_]))
 
     plt.figure(figsize=(6, 5))
     sns.heatmap(confusion_matrix(y_test, preds), annot=True, fmt='d', cmap='Blues',
                 xticklabels=le.classes_, yticklabels=le.classes_)
+    plt.xlabel('Predicted Label')  # Added axis
+    plt.ylabel('True Label')       # Added axis
     plt.title("Confusion Matrix: Standard Class (Tuned)")
+    plt.tight_layout()
     plt.savefig("S5_Confusion_Standard_Tuned.png")
     print("Saved Confusion Matrix.")
 
@@ -136,6 +157,15 @@ def run_standard_regression():
 
     X_train, X_test, y_train, y_test = get_splits(df, 'temp')
 
+    # --- BASELINES ---
+    # Last Observation Baseline
+    preds_last_obs = np.concatenate(([y_train.iloc[-1]], y_test.iloc[:-1]))
+    print("Baseline (Last Observation):")
+    print(f"  RMSE: {root_mean_squared_error(y_test, preds_last_obs):.4f}")
+    print(f"  MAE:  {mean_absolute_error(y_test, preds_last_obs):.4f}")
+    print(f"  R2:  {r2_score(y_test, preds_last_obs):.4f}\n")
+
+    # --- MODELING ---
     param_dist = {
         "n_estimators": [200, 300, 500],
         "max_depth": [10, 20, None],
@@ -162,9 +192,9 @@ def run_standard_regression():
     preds = best_model.predict(X_test)
 
     print("Best params:", search.best_params_)
-    print(f"RMSE: {root_mean_squared_error(y_test, preds):.4f}")
-    print(f"MAE: {mean_absolute_error(y_test, preds):.2f}")
-    print(f"R2:  {r2_score(y_test, preds):.4f}")
+    print(f"Model RMSE: {root_mean_squared_error(y_test, preds):.4f}")
+    print(f"Model MAE: {mean_absolute_error(y_test, preds):.4f}")
+    print(f"Model R2:  {r2_score(y_test, preds):.4f}")
 
 
 
@@ -210,7 +240,7 @@ def run_pca_flow():
         "rf__min_samples_leaf": [1, 2, 5],
         "rf__max_features": ["sqrt", "log2", None]
     }
-
+ 
     search = RandomizedSearchCV(
         pipe,
         param_distributions=param_dist,
@@ -232,7 +262,10 @@ def run_pca_flow():
     plt.figure(figsize=(6, 5))
     sns.heatmap(confusion_matrix(y_test, preds), annot=True, fmt='d', cmap='Greens',
                 xticklabels=le.classes_, yticklabels=le.classes_)
+    plt.xlabel('Predicted Label')  # Added axis
+    plt.ylabel('True Label')       # Added axis
     plt.title("Confusion Matrix: PCA Class (Tuned)")
+    plt.tight_layout()
     plt.savefig("S5_Confusion_PCA_Tuned.png")
     print("Saved Confusion Matrix.")
 

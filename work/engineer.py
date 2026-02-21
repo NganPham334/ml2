@@ -30,6 +30,22 @@ def prep_common_features(df):
         df['datetime'] = pd.to_datetime(df['datetime'])
         df = df.sort_values(by='datetime').reset_index(drop=True)
 
+    # --- NEW TIME-SERIES METRIC FEATURES (STRICTLY HISTORICAL) ---
+    # 1. Rolling 3-day precipitation sum (ends yesterday)
+    if 'precip' in df.columns:
+        df['rolling_precip_3day'] = df['precip'].shift(1).rolling(window=3).sum()
+
+    # 2. Diurnal temperature range (from yesterday)
+    if 'tempmax' in df.columns and 'tempmin' in df.columns:
+        df['diurnal_temp_range'] = (df['tempmax'] - df['tempmin']).shift(1)
+
+    # 3. 24h Pressure change (change between yesterday and the day before yesterday)
+    if 'sealevelpressure' in df.columns:
+        df['pressure_change_24h'] = df['sealevelpressure'].diff(1).shift(1)
+    elif 'pressure' in df.columns:
+        df['pressure_change_24h'] = df['pressure'].diff(1).shift(1)
+    # -------------------------------------------------------------
+
     if 'datetime' in df.columns:
         df['day_of_year'] = df['datetime'].dt.dayofyear
         df = encode_cyclical(df, 'day_of_year', 365.25)
@@ -49,9 +65,16 @@ def add_lags(df):
         df['datetime'] = pd.to_datetime(df['datetime'])
         df = df.sort_values(by='datetime').reset_index(drop=True)
 
-    # STRICT LOGIC REQUESTED
-    exclude_cols = ['datetime', 'day_of_year_sin', 'day_of_year_cos']
-    cols_to_lag = [col for col in df.columns if col not in exclude_cols and col != 'datetime']
+    # STRICT LOGIC REQUESTED - Excluded new engineered features
+    exclude_cols = [
+        'datetime',
+        'day_of_year_sin',
+        'day_of_year_cos',
+        'rolling_precip_3day',
+        'diurnal_temp_range',
+        'pressure_change_24h'
+    ]
+    cols_to_lag = [col for col in df.columns if col not in exclude_cols]
 
     for col in cols_to_lag:
         for lag in [1, 2, 3]:
