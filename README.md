@@ -165,8 +165,8 @@ python script: rf_baseline.py
 our models have meaningfully learned and improved upon the baselines.\
 exception is our classification vs persistence baseline
 
-the temperature model, having improved over the baseline model on all 3 metrics validates our data preparation and training methodology for both models.\
-that combined with the fact that visual crossing classifies any day with precipitation > 0 as rain(light 0.2mm precipitation drizzle also counts as rain) suggests that our classification model's inability to improve over the baseline migbt be due to dataset limitations, either temporal granularity/range or especially the lack of spatial/atmospheric context.\
+the temperature model, having improved over the baseline model on all 3 metrics validates our data preparation and training methodology for both models.(they use the same pipeline architecturally, we split things up in the engineer script only because of the difference in target)\
+that combined with the fact that visual crossing classifies any day with precipitation > 0 as rain(light 0.2mm precipitation drizzle also counts as rain, increasing class overlap) suggests that our classification model's inability to improve over the baseline migbt be due to dataset limitations, either temporal granularity/range or especially the lack of spatial/atmospheric context.\
 the model is currently blind to oncoming weather events, say a rain band moving towards hanoi or a cold front reaching our city by tomorrow noon, mixing with hot humid air producing heavy rainfall.
 
 
