@@ -74,12 +74,14 @@ def run_standard_classification():
     preds_majority = np.full(shape=y_test.shape, fill_value=majority_class)
     print("Baseline (Majority Class):")
     print(f"  Accuracy: {accuracy_score(y_test, preds_majority):.4f}")
+    print(f"  Weighted F1: {f1_score(y_test, preds_majority, average='weighted'):.4f}")
     print(f"  Macro F1: {f1_score(y_test, preds_majority, average='macro'):.4f}\n")
 
     # Last Observation Baseline (Predict t using true value of t-1)
     preds_last_obs = np.concatenate(([y_train.iloc[-1]], y_test.iloc[:-1]))
     print("Baseline (Last Observation):")
     print(f"  Accuracy: {accuracy_score(y_test, preds_last_obs):.4f}")
+    print(f"  Weighted F1: {f1_score(y_test, preds_last_obs, average='weighted'):.4f}")
     print(f"  Macro F1: {f1_score(y_test, preds_last_obs, average='macro'):.4f}\n")
 
     # --- MODELING ---
